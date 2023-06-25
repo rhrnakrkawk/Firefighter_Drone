@@ -11,6 +11,9 @@ import threading
 import time
 from tkinter import *
 from tkinter import messagebox
+import folium
+import webbrowser
+
  
 class MyFrame(Frame):
     def __init__(self, master=Frame):
@@ -45,6 +48,13 @@ def mqtt_s():
 def call_back(client, userdata, message):
     string = str(message.payload.decode("utf-8"))
     command, latitude, longitude = string.split(",")
+    lat = float(latitude)
+    lon = float(longitude)
+    m = folium.Map(location=[lat, lon], zoom_start=20)
+    m.save("map.html")
+    webbrowser.open("map.html")
+    
+
     if(command == "report"):
         msg = messagebox.askquestion("report", "there is report\ndo you start mission?")
         if(msg == "yes"):
