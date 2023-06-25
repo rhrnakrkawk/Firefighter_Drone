@@ -25,19 +25,17 @@ public class ReportActivity extends AppCompatActivity {
         TextView tv_lonStatus = findViewById(R.id.tv_lonStatus);
         tv_latStatus.setText(locArr[0]);
         tv_lonStatus.setText(locArr[1]);
+        TextView tv = findViewById(R.id.tv);
         try {
             MqttClient client = new MqttClient("tcp://210.106.192.242:1883", MqttClient.generateClientId(),null);
             client.connect();
             Log.i("Test", "connect");
             client.publish("data", new MqttMessage(loc.getBytes()));
+            tv.setText("신고가 완료됐습니다.");
+
         } catch (MqttException e) {
             e.printStackTrace();
         }
-//        findViewById(R.id.btn_send).setOnClickListener(new View.OnClickListener() {//버튼 이벤트 처리
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
+
     }
 }
