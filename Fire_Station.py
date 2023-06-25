@@ -51,6 +51,8 @@ def call_back(client, userdata, message):
     lat = float(latitude)
     lon = float(longitude)
     m = folium.Map(location=[lat, lon], zoom_start=20)
+    #folium.Marker([lat, lon], popup='<b>Fire Station</b>').add_to(m)
+    folium.Marker([lat, lon], popup='<b>Destination</b>').add_to(m)
     m.save("map.html")
     webbrowser.open("map.html")
     
