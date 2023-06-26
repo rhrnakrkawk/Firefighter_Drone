@@ -50,8 +50,10 @@ def call_back(client, userdata, message):
     command, latitude, longitude = string.split(",")
     lat = float(latitude)
     lon = float(longitude)
-    m = folium.Map(location=[lat, lon], zoom_start=20)
-    #folium.Marker([lat, lon], popup='<b>Fire Station</b>').add_to(m)
+    lat_curr = 37.670806
+    lon_curr = 126.778892
+    m = folium.Map(location=[(lat+lat_curr)/2, (lon+lon_curr)/2], zoom_start=15)
+    folium.Marker([lat_curr, lon_curr], popup='<b>Fire Station</b>').add_to(m)
     folium.Marker([lat, lon], popup='<b>Destination</b>').add_to(m)
     m.save("map.html")
     webbrowser.open("map.html")
@@ -60,7 +62,7 @@ def call_back(client, userdata, message):
     if(command == "report"):
         msg = messagebox.askquestion("report", "there is report\ndo you start mission?")
         if(msg == "yes"):
-            s_st.publish("/data/drone", (latitude + "," + longitude))
+            s_st.publish("data/drone", (latitude + "," + longitude))
             frame.sett("on progress")
             frame.createLatitude(latitude)
             frame.createLongitude(longitude)
@@ -77,7 +79,7 @@ if __name__ == '__main__':
  
     
     s_st.connect(broker, 1883)
-    s_st.subscribe("/data/ST")
+    s_st.subscribe("data/ST")
    
     root = Tk()
     root.title('GUI')

@@ -39,6 +39,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -70,12 +74,12 @@ public class MainActivity extends AppCompatActivity
     Location mCurrentLocatiion;
     LatLng currentPosition;
 
-
+    boolean isReported = false;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
     private Location location;
 
-
+    Button btn_report;
     private View mLayout;  // Snackbar 사용하기 위해서는 View가 필요합니다.
     // (참고로 Toast에서는 Context가 필요했습니다.)
 
@@ -108,14 +112,25 @@ public class MainActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        btn_report = findViewById(R.id.btn_report);
         findViewById(R.id.btn_report).setOnClickListener(new View.OnClickListener() {//버튼 이벤트 처리
             @Override
             public void onClick(View view) {
                 String s = String.valueOf(currentPosition.latitude) + "," + String.valueOf(currentPosition.longitude);
-                Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
-                intent.putExtra("location", s);
-                startActivity(intent);
+                try {
+                    if(!isReported){
+                        MqttClient client = new MqttClient("tcp://210.106.192.242:1883", MqttClient.generateClientId(),null);
+                        client.connect();
+                        Log.i("Test", "connect");
+                        client.publish("data/ST", new MqttMessage(("report,"+s).getBytes()));
+                        Toast.makeText(MainActivity.this, "신고가 완료됐습니다.", Toast.LENGTH_SHORT).show();
+                        isReported = true;
+                        btn_report.setText("신고가 완료됐습니다.");
+                        btn_report.setEnabled(false);
+                    }
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
                 //버튼 클릭시 Toast 메세지"버튼 클릭 성공" 출력
             }
         });

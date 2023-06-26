@@ -13,7 +13,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage
 class MainActivity : AppCompatActivity() {
 
     val ServerIP:String = "tcp://210.106.192.242:1883"  //1번 서버 IP
-    val TOPIC:String = "/data/ST"	//2번 토픽
+    val TOPIC:String = "data/ST"	//2번 토픽
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
