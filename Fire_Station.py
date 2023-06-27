@@ -14,6 +14,7 @@ from tkinter import messagebox
 import folium
 import webbrowser
 from haversine import haversine
+from geopy.geocoders import Nominatim
 lat_curr = 37.670806
 lon_curr = 126.778892
 # class MyFrame(Frame):
@@ -72,6 +73,11 @@ lon_curr = 126.778892
 #         self.btn_map.grid(row= 0 , column = 0)
 #         self.btn_start.grid(row= 1 , column = 0)
      
+def geocoding_reverse(lat, lon): 
+    geolocoder = Nominatim(user_agent = 'South Korea', timeout=None)
+    address = geolocoder.reverse(f"{lat}, {lon}")
+
+    return address
 
 def mqtt_s():
     s_st.loop_forever()
@@ -79,6 +85,7 @@ def mqtt_s():
 def call_back(client, userdata, message):
     string = str(message.payload.decode("utf-8"))
     command, latitude, longitude = string.split(",")
+    address = geocoding_reverse(latitude, longitude)
     lat = float(latitude)
     lon = float(longitude)
     lat_curr = 37.670806
@@ -88,18 +95,19 @@ def call_back(client, userdata, message):
     folium.Marker([lat, lon], popup='<b>Destination</b>').add_to(m)
     m.save("map.html")
     webbrowser.open("map.html")
-    
-
-#     if(command == "report"):
-#         msg = messagebox.askquestion("report", "there is report\ndo you start mission?")
-#         if(msg == "yes"):
-#             s_st.publish("data/drone", (latitude + "," + longitude))
-#             frame.sett("on progress")
-#             frame.createLatitude(latitude)
-#             frame.createLongitude(longitude)
-#     elif(string == "done"):
-#         messagebox.showinfo("info", "mission clear!")
-#         frame.sett("no progress")
+    lb_lat_curr.config(text=f"{lat}")
+    lb_lon_curr.config(text=f"{lon}")
+    lb_adress_curr.config(text = address)
+    # if(command == "report"):
+    #     msg = messagebox.askquestion("report", "there is report\ndo you start mission?")
+    #     if(msg == "yes"):
+    #         s_st.publish("data/drone", (latitude + "," + longitude))
+    #         frame.sett("on progress")
+    #         frame.createLatitude(latitude)
+    #         frame.createLongitude(longitude)
+    # elif(string == "done"):
+    #     messagebox.showinfo("info", "mission clear!")
+    #     frame.sett("no progress")
 
  
     
@@ -153,15 +161,20 @@ lb_lat_curr = Label(frame1, text="-", width=20, height=3, bg='white', fg='black'
 lb_lon_curr = Label(frame1, text="-", width=20, height=3, bg='white', fg='black', relief='ridge', borderwidth=4)
 lb_state_curr = Label(frame1, text="Not Yet", width=20, height=3, bg='white', fg='black', relief='ridge', borderwidth=4)
 lb_state = Label(frame1, text="Drone", width=10, height=3, bg='white', fg='black', relief='ridge', borderwidth=4)
+lb_adress = Label(frame1, text="Address", width=10, height=3, bg='white', fg='black', relief='ridge', borderwidth=4)
+lb_adress_curr = Label(frame1, text="-", width=20, height=3, bg='white', fg='black', relief='ridge', borderwidth=4)
 
 lb_lat.grid(row=0,column=0)
 lb_lat_curr.grid(row=0,column=1)
         
 lb_lon.grid(row=1,column=0)
 lb_lon_curr.grid(row=1,column=1)
+
+lb_adress.grid(row=2,column=0)
+lb_adress_curr.grid(row=2,column=1)
         
-lb_state.grid(row=2,column=0)
-lb_state_curr.grid(row=2,column=1)
+lb_state.grid(row=3,column=0)
+lb_state_curr.grid(row=3,column=1)
 
 
 
